@@ -4,6 +4,7 @@ import { AppComponent } from './app/app.component';
 import { HoneycombWebSDK } from '@honeycombio/opentelemetry-web';
 import { getWebAutoInstrumentations } from '@opentelemetry/auto-instrumentations-web';
 import { environment } from './environments/envrionment';
+import { ZoneContextManager } from '@opentelemetry/context-zone-peer-dep';
 
 const configDefaults = {
   ignoreNetworkEvents: true,
@@ -14,6 +15,7 @@ const configDefaults = {
 const sdk = new HoneycombWebSDK({
   // endpoint: "https://api.eu1.honeycomb.io/v1/traces", // Send to EU instance of Honeycomb. Defaults to sending to US instance.
   debug: true, // Set to false for production environment.
+  contextManager: new ZoneContextManager(),
   apiKey: environment.honeycombApiKey,
   serviceName: 'angular-frontend',
   instrumentations: [getWebAutoInstrumentations({
