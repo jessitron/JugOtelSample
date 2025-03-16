@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -27,7 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>23</java.version>
+		<java.version>21</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -40,6 +40,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.opentelemetry.javaagent.instrumentation</groupId>
+			<artifactId>opentelemetry-javaagent-opentelemetry-api-1.10</artifactId>
+			<version>2.14.0-alpha</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -47,6 +53,35 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>org.rimple.sentimental_chat.chat_service.ChatServiceApplication</mainClass>
+					<executable>java</executable>
+					<arguments>
+						<!-- fix this -->
+						<argument>-javaagent:${settings.localRepository}/io/opentelemetry/javaagent/opentelemetry-javaagent-opentelemetry-api-1.10/2.14.0-alpha/opentelemetry-javaagent-opentelemetry-api-1.10-2.14.0-alpha.jar</argument>
+
+						<argument>-Dotel.exporter.otlp.endpoint=https://api.honeycomb.io:443</argument>
+						<argument>-Dotel.resource.attributes=service.name=chat-service</argument>
+
+						<argument>-jar</argument>
+						<argument>${project.build.directory}/${project.build.finalName}.jar</argument>
+					</arguments>
+
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
