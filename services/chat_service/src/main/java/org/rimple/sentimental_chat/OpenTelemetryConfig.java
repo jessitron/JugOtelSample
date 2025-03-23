@@ -1,4 +1,4 @@
-package org.rimple.sentimental_chat.chat_service.config;
+package org.rimple.sentimental_chat;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;

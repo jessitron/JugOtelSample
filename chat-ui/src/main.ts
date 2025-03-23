@@ -13,7 +13,6 @@ const configDefaults = {
   ]
 }
 const sdk = new HoneycombWebSDK({
-  // endpoint: "https://api.eu1.honeycomb.io/v1/traces", // Send to EU instance of Honeycomb. Defaults to sending to US instance.
   debug: true, // Set to false for production environment.
   contextManager: new ZoneContextManager(),
   apiKey: environment.honeycombApiKey,

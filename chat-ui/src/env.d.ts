@@ -5,6 +5,7 @@ declare interface Env {
   // Example: NGX_VERSION: string;
   NG_APP_HONEYCOMB_API_KEY: string;
   NG_APP_API_URL: string;
+  NG_APP_CHAT_ENDPOINT: string;
   [key: string]: any;
 }
 

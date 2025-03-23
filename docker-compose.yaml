@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  chat-backend:
+    build:
+      context: ./services/chat_service
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - HONEYCOMB_API_KEY=${HONEYCOMB_API_KEY}
+    env_file:
+      ./.env
+    networks:
+      - chat-network
+
+  chat-ui:
+    build:
+      context: ./chat-ui
+      dockerfile: Dockerfile
+    env_file:
+      - ./chat-ui/.env
+    ports:
+      - "4200:80"
+    environment:
+      - NG_APP_HONEYCOMB_API_KEY=${NG_APP_HONEYCOMB_API_KEY}
+      - NG_APP_API_URL=${NG_APP_API_URL} 
+      - NG_APP_CHAT_ENDPOINT=ws://chat-backend:8080/gs-guide-websocket
+    depends_on:
+      - chat-backend
+    networks:
+      - chat-network
+
+networks:
+  chat-network:
+    driver: bridge
