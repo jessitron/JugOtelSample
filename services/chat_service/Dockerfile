@@ -7,6 +7,7 @@ WORKDIR /app
 # Copy pom.xml and source code
 COPY pom.xml .
 COPY src ./src
+COPY opentelemetry-javaagent.jar ./opentelemetry-javaagent.jar
 
 # Build the application
 RUN mvn clean package -DskipTests
@@ -17,13 +18,14 @@ FROM eclipse-temurin:23-jdk-alpine
 # Set working directory
 WORKDIR /app
 
-ENV HONEYCOMB_API_KEY=${HONEYCOMB_API_KEY}
 # Copy the JAR from builder stage
 COPY --from=builder /app/target/*.jar app.jar
+# Copy the OpenTelemetry Java Agent from builder stage
+COPY --from=builder /app/opentelemetry-javaagent.jar opentelemetry-javaagent.jar
 
 # Expose port 8080
 EXPOSE 8080
 
 # Run the application
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-javaagent:./opentelemetry-javaagent.jar", "-jar", "./app.jar"]
 

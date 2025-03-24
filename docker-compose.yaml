@@ -9,8 +9,12 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - HONEYCOMB_API_KEY=${HONEYCOMB_API_KEY}
+      - OTEL_SERVICE_NAME=chat-service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=https://api.honeycomb.io:443
+      - OTEL_EXPORTER_OTLP_HEADERS=x-honeycomb-team=${HONEYCOMB_API_KEY}
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
     env_file:
-      ./.env
+      - ./.env
     networks:
       - chat-network
 
