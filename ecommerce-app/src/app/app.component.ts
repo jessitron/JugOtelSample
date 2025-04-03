@@ -5,6 +5,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CartService } from './services/cart.service';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -20,6 +21,7 @@ import { ChatComponent } from './components/chat/chat.component';
     MatButtonModule,
     MatIconModule,
     MatBadgeModule,
+    MatTooltipModule,
     ChatComponent
   ],
   template: `
@@ -30,6 +32,9 @@ import { ChatComponent } from './components/chat/chat.component';
       <button mat-button routerLink="/cart">
         <mat-icon>shopping_cart</mat-icon>
         <span matBadge="{{ cartItemCount }}" matBadgeColor="warn" matBadgeSize="small">Cart</span>
+      </button>
+      <button mat-icon-button (click)="toggleChat()" matTooltip="Chat with Support">
+        <mat-icon>chat</mat-icon>
       </button>
     </mat-toolbar>
     <main>
@@ -50,7 +55,7 @@ import { ChatComponent } from './components/chat/chat.component';
 })
 export class AppComponent implements OnInit {
   cartItemCount = 0;
-  isChatOpen = true;
+  isChatOpen = false;
 
   constructor(private cartService: CartService) {}
 
@@ -61,5 +66,9 @@ export class AppComponent implements OnInit {
   updateCartCount(): void {
     const cartItems = this.cartService.getCartItems();
     this.cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  }
+  
+  toggleChat(): void {
+    this.isChatOpen = !this.isChatOpen;
   }
 }
