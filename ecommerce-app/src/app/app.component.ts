@@ -8,6 +8,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { CartService } from './services/cart.service';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { ChatComponent } from './components/chat/chat.component';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,8 @@ import { Observable } from 'rxjs';
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MatBadgeModule
+    MatBadgeModule,
+    ChatComponent
   ],
   template: `
     <mat-toolbar color="primary">
@@ -33,6 +35,9 @@ import { Observable } from 'rxjs';
     <main>
       <router-outlet></router-outlet>
     </main>
+    
+    <!-- Chat component -->
+    <app-chat [(isOpen)]="isChatOpen"></app-chat>
   `,
   styles: [`
     .spacer {
@@ -45,6 +50,7 @@ import { Observable } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   cartItemCount = 0;
+  isChatOpen = true;
 
   constructor(private cartService: CartService) {}
 
