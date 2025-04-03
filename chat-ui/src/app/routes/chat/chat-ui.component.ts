@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { StompService } from './stomp.service';
+import { StompService } from '../../chat/stomp.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -15,9 +15,9 @@ import { CommonModule } from '@angular/common';
     CommonModule,
     FormsModule
   ],
-  styleUrl: './app.component.scss'
+  styleUrl: './chatUI.component.scss'
 })
-export class ChatUI implements OnInit {
+export class ChatUIComponent implements OnInit {
   constructor(private stompService: StompService) {}
   ngOnInit(): void {
     this.stompService.message$.subscribe((msg) => {
