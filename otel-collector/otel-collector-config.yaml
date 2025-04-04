@@ -6,6 +6,8 @@ receivers:
         cors:
           allowed_origins:
             - http://localhost:4200
+            - http://ecommerce-app:8080
+            - http://localhost:8080
           allowed_headers:
             - "*"
 processors:
