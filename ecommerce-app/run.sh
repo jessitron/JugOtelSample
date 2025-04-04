@@ -1,0 +1,4 @@
+#!/bin/bash
+source ../.env && \
+  NG_APP_CHAT_ENDPOINT=${CHAT_ENDPOINT} \
+  NG_APP_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT} npm start

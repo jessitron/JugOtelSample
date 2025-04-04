@@ -16,12 +16,12 @@ export class StompService {
   constructor() {
     this.initializeWebSocketConnection();
   }
-
+  
   private initializeWebSocketConnection(): void {
     const rootSpan = tracer.startActiveSpan('ws::initialize', (span: Span) => {
       try {
         this.stompClient = new Client({
-          brokerURL: 'ws://localhost:8080/gs-guide-websocket', // Ensure this URL matches your server's WebSocket endpoint
+          brokerURL: import.meta.env.NG_APP_CHAT_ENDPOINT,
           reconnectDelay: 5000, // Auto-reconnect after 5 seconds
         });
 
