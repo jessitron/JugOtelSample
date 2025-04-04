@@ -18,6 +18,8 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.Map;
 
@@ -55,7 +57,8 @@ public class ChatWebSocketConfig implements WebSocketMessageBrokerConfigurer {
         .addEndpoint("/gs-guide-websocket")
         .addInterceptors(new HandshakeInterceptor() {
           @Override
-          public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> headers) throws Exception {
+          public boolean beforeHandshake(@NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response, 
+              @NonNull WebSocketHandler wsHandler, @NonNull Map<String, Object> headers) throws Exception {
             Context extractedContext = W3CTraceContextPropagator
                 .getInstance()
                 .extract(Context.current(), headers, GETTER);
@@ -79,7 +82,8 @@ public class ChatWebSocketConfig implements WebSocketMessageBrokerConfigurer {
           }
 
           @Override
-          public void afterHandshake(org.springframework.http.server.ServerHttpRequest request, org.springframework.http.server.ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
+          public void afterHandshake(@NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response,
+              @NonNull WebSocketHandler wsHandler, @Nullable Exception exception) {
             logger.info("WebSocket handshake completed");
             Span span = (Span) request.getAttributes().get("otelSpan");
             if (span != null) {
