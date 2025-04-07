@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { EnvironmentService } from './environment.service';
 
 export interface Order {
   items: any[];
@@ -31,12 +32,15 @@ export interface OrderResponse {
   providedIn: 'root'
 })
 export class OrderService {
+  constructor(
+    private http: HttpClient,
+    private environmentService: EnvironmentService
+  ) {}
+
   placeOrder(order: Order): Observable<OrderResponse> {
-    // Simulate API call with a delay
-    return of({
-      orderId: Math.random().toString(36).substring(2, 15),
-      status: 'success',
-      message: 'Order placed successfully'
-    }).pipe(delay(1000));
+    return this.http.post<OrderResponse>(
+      `${this.environmentService.commerceEndpoint}/orders`,
+      order
+    );
   }
 } 

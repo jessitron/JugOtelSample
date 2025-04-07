@@ -6,6 +6,7 @@ declare global {
       HONEYCOMB_API_KEY: string;
       API_URL: string;
       CHAT_ENDPOINT: string;
+      COMMERCE_ENDPOINT: string;
     };
   }
 }
@@ -24,5 +25,9 @@ export class EnvironmentService {
 
   get chatEndpoint(): string {
     return window.env.CHAT_ENDPOINT;
+  }
+
+  get commerceEndpoint(): string {
+    return window.env.COMMERCE_ENDPOINT;
   }
 } 

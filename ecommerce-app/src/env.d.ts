@@ -5,6 +5,7 @@ declare interface Env {
   // Example: NGX_VERSION: string;
   NG_APP_OTLP_ENDPOINT: string;
   NG_APP_CHAT_ENDPOINT: string;
+  NG_APP_COMMERCE_ENDPOINT: string;
 }
 
 // Choose how to access the environment variables.
