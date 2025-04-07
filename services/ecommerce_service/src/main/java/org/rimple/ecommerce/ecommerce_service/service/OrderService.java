@@ -29,16 +29,18 @@ public class OrderService {
 
         Order order = new Order();
         order.setUserId(userId);
-        order.setOrderDate(LocalDateTime.now());
+        order.setCreatedAt(LocalDateTime.now());
+        order.setUpdatedAt(LocalDateTime.now());
         order.setStatus("PENDING");
-        order.setTotal(cart.getTotal());
+        order.setTotalAmount(cart.getTotal());
 
         // Convert cart items to order items
         cart.getItems().forEach(cartItem -> {
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(cartItem.getProduct());
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(cartItem.getProduct().getPrice());
+            orderItem.setPriceAtTime(cartItem.getProduct().getPrice());
+            orderItem.setCreatedAt(LocalDateTime.now());
             order.getItems().add(orderItem);
         });
 

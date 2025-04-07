@@ -15,7 +15,7 @@ processors:
 
 exporters:
   debug:
-    verbosity: detailed
+
   otlp:
     endpoint: https://api.honeycomb.io:443
     headers:

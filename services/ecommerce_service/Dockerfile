@@ -12,4 +12,8 @@ COPY --from=build /app/target/*.jar app.jar
 COPY opentelemetry-javaagent.jar .
 
 EXPOSE 8081
-ENTRYPOINT ["java", "-javaagent:opentelemetry-javaagent.jar", "-jar", "app.jar"] 
+
+# Default logging level is INFO
+ENV OTEL_LOGS_EXPORTER=none
+
+ENTRYPOINT ["sh", "-c", "java -javaagent:opentelemetry-javaagent.jar  -jar app.jar"] 

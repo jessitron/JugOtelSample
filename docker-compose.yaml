@@ -1,14 +1,28 @@
 services:
 
   postgres:
+    env_file:
+      - ./.env
     image: postgres:15
     restart: always
     environment:
-      POSTGRES_DB: ordersdb
-      POSTGRES_USER: orders
-      POSTGRES_PASSWORD: orderspass
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    networks:
+      - chat-network
+
+  migrations:
+    image: flyway/flyway:9.22.1
+    command: -url=jdbc:postgresql://postgres:${POSTGRES_PORT}/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} -connectRetries=60 migrate
+    volumes:
+      - ./db/migrations:/flyway/sql
+    env_file:
+      - ./.env
+    depends_on:
+      - postgres
     networks:
       - chat-network
 
@@ -23,6 +37,7 @@ services:
       - OTEL_SERVICE_NAME=chat-service
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
       - OTEL_EXPORTER_OTLP_PROTOCOL=${OTEL_EXPORTER_OTLP_PROTOCOL}
+      - OTEL_LOGS_EXPORTER=${OTEL_LOGS_EXPORTER}
     env_file:
       - ./.env
     networks:
@@ -39,11 +54,29 @@ services:
       - OTEL_SERVICE_NAME=ecommerce-service
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
       - OTEL_EXPORTER_OTLP_PROTOCOL=${OTEL_EXPORTER_OTLP_PROTOCOL}
+      - OTEL_JAVAAGENT_LOGGING_LEVEL=${OTEL_JAVAAGENT_LOGGING_LEVEL:-info}
     env_file:
       - ./.env
     depends_on:
       - postgres
-      - otel-collector
+      - migrations
+    networks:
+      - chat-network
+
+  ecommerce-app:
+    build:
+      context: ./ecommerce-app
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    environment:
+      - NG_APP_CHAT_ENDPOINT=http://chat-service:8080/api
+      - NG_APP_COMMERCE_ENDPOINT=http://ecommerce-service:8081/api
+    env_file:
+      - ./.env
+    depends_on:
+      - chat-service
+      - ecommerce-service
     networks:
       - chat-network
 
