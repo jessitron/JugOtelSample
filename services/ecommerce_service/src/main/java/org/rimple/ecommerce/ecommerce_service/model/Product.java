@@ -1,12 +1,11 @@
 package org.rimple.ecommerce.ecommerce_service.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
+import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "products")
 @Data
 public class Product {
     @Id
@@ -16,6 +15,15 @@ public class Product {
     private String name;
     private String description;
     private Double price;
-    private Integer stock;
+    
+    @Column(name = "image_url")
     private String imageUrl;
+    
+    private String category;
+    
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 } 
