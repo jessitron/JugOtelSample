@@ -37,22 +37,25 @@ public class HelloMessageController {
     Context extractedContext = W3CTraceContextPropagator.getInstance().extract(Context.current(), headers, GETTER);
     log.info("Extracted context: " + extractedContext.toString());
 
+    Span span = tracer.spanBuilder("websocket-message-received")
+              .setSpanKind(SpanKind.SERVER)
+              .startSpan();
+
     try (Scope scope = extractedContext.makeCurrent()) {
       // ✅ Create span inside extracted trace context
-      Span span = tracer.spanBuilder("websocket-message-received")
-          .setSpanKind(SpanKind.SERVER)
-          .startSpan();
-
       log.info("Received message: " + message.toString());
 
       // actual work performed here
       HelloResponse returnValue = new HelloResponse("Hello, " + message.getName() + "!");
 
-      span.end(); // ✅ Ensure span is ended within the correct context
+      log.info("Returning value: " + returnValue.toString());
+
       return returnValue;
     } catch (Exception e) {
       log.error("Error handling message", e);
       throw e;
+    } finally {
+      span.end();
     }
   }
 }

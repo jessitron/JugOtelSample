@@ -6,7 +6,7 @@ receivers:
         cors:
           allowed_origins:
             - http://localhost:4200
-            - http://ecommerce-app:8080
+            - http://ecommerce-app:8081
             - http://localhost:8080
           allowed_headers:
             - "*"
@@ -28,5 +28,9 @@ service:
     traces:
       receivers: [otlp]
       #processors: [symbolicator, batch]
+      processors: [batch]
+      exporters: [debug, otlp]
+    logs:
+      receivers: [otlp]
       processors: [batch]
       exporters: [debug, otlp]
