@@ -7,8 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CartService } from './services/cart.service';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
 import { ChatComponent } from './components/chat/chat.component';
 
 @Component({

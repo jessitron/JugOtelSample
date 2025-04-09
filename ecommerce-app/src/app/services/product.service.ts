@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Product } from '../models/product.model';
 
-const COMMERCE_ENDPOINT = import.meta.env.NG_APP_COMMERCE_ENDPOINT;
+const PRODUCT_API_PATH="/api/products"
 
 @Injectable({
   providedIn: 'root'
@@ -12,21 +12,21 @@ export class ProductService {
   constructor( private http: HttpClient) {}
 
   getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${COMMERCE_ENDPOINT}/products`)
+    return this.http.get<Product[]>('/api/products')
       .pipe(
         map(products => products.map(product => ({
           ...product,
-          imageUrl: `${COMMERCE_ENDPOINT}${product.imageUrl}`
+          imageUrl: product.imageUrl
         })))
       );
   }
 
   getProductById(id: string): Observable<Product> {
-    return this.http.get<Product>(`${COMMERCE_ENDPOINT}/products/${id}`)
+    return this.http.get<Product>(import.meta.env.NG_APP_COMMERCE_ENDPOINT + `/products/${id}`)
       .pipe(
         map(product => ({
           ...product,
-          imageUrl: `${COMMERCE_ENDPOINT}/${product.imageUrl}`
+          imageUrl: product.imageUrl
         }))
       );
   }

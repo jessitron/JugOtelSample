@@ -13,6 +13,8 @@ export class StompService {
   private messageSubject = new BehaviorSubject<string | null>(null);
   message$ = this.messageSubject.asObservable();
 
+  private WS_ENDPOINT = `ws://${window.location.host}/api/chat`;
+
   constructor() {
     this.initializeWebSocketConnection();
   }
@@ -21,7 +23,7 @@ export class StompService {
     const rootSpan = tracer.startActiveSpan('ws::initialize', (span: Span) => {
       try {
         this.stompClient = new Client({
-          brokerURL: import.meta.env.NG_APP_CHAT_ENDPOINT,
+          brokerURL: this.WS_ENDPOINT,
           reconnectDelay: 5000, // Auto-reconnect after 5 seconds
         });
 

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { EnvironmentService } from './environment.service';
 
 export interface Order {
   items: any[];
@@ -28,18 +27,19 @@ export interface OrderResponse {
   message: string;
 }
 
+// TODO extract to config somewhere
+
+const ORDER_API_PATH="/api/orders"
+
 @Injectable({
   providedIn: 'root'
 })
 export class OrderService {
-  constructor(
-    private http: HttpClient,
-    private environmentService: EnvironmentService
-  ) {}
+  constructor( private http: HttpClient ) {}
 
   placeOrder(order: Order): Observable<OrderResponse> {
     return this.http.post<OrderResponse>(
-      `${this.environmentService.commerceEndpoint}/orders`,
+      `${ORDER_API_PATH}`,
       order
     );
   }

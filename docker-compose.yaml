@@ -67,11 +67,19 @@ services:
     build:
       context: ./ecommerce-app
       dockerfile: Dockerfile
+      args:
+        - NG_APP_COMMERCE_ENDPOINT=http://localhost:8081/api
+        - NG_APP_CHAT_ENDPOINT=http://localhost:8080/api
+        - NG_APP_OTLP_ENDPOINT=http://localhost:4318
     ports:
-      - "4200:4200"
+      - "4200:80"
     environment:
-      - NG_APP_CHAT_ENDPOINT=http://chat-service:8080/api
-      - NG_APP_COMMERCE_ENDPOINT=http://ecommerce-service:8081/api
+      - NG_APP_CHAT_ENDPOINT=http://localhost:8080
+      - NG_APP_COMMERCE_ENDPOINT=http://localhost:8081
+      - NG_APP_OTLP_ENDPOINT=http://localhost:4318
+      - COMMERCE_ENDPOINT=http://ecommerce-service:8081
+      - CHAT_ENDPOINT=http://chat-service:8080/gs-guide-websocket
+      - OTLP_ENDPOINT=http://otel-collector:4318
     env_file:
       - ./.env
     depends_on:
