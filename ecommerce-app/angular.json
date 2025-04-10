@@ -72,7 +72,8 @@
               "buildTarget": "ecommerce-app:build:production"
             },
             "development": {
-              "buildTarget": "ecommerce-app:build:development"
+              "buildTarget": "ecommerce-app:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development",

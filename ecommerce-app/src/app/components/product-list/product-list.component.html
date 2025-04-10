@@ -2,7 +2,12 @@
   <h1>Our Products</h1>
   <div class="products-grid">
     <mat-card *ngFor="let product of products" class="product-card">
-      <img mat-card-image [src]="product.imageUrl" [alt]="product.name">
+      <app-product-image
+        [imageUrl]="product.imageUrl"
+        [productId]="product.id"
+        [altText]="product.name"
+        imageClass="mat-card-image"
+      ></app-product-image>
       <mat-card-content>
         <h2>{{ product.name }}</h2>
         <p>{{ product.description }}</p>

@@ -2,19 +2,6 @@
 
 @use '@angular/material' as mat;
 
-/* $primary-palette: mat.define-palette(mat.$primary-palette);
-$accent-palette: mat.define-palette(mat.$primary-palette, A200, A100, A400);
-$theme: mat.define-light-theme((
-  color: (
-    primary: $primary-palette,
-    accent: $accent-palette
-  )
-));
-
-*/
-
-/*@include mat.all-component-themes($theme);*/
-
 /* Global styles */
 html, body {
   height: 100%;
@@ -55,4 +42,44 @@ html, body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Ensure badge is visible */
+.mat-badge-content {
+  background-color: #ffffff !important;
+  color: red;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 10px;
+  box-sizing: border-box;
+  opacity: 1 !important;
+  visibility: visible !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Override any potential Material styles hiding the badge */
+.mat-badge-hidden {
+  display: none;
+}
+
+.mat-badge {
+  position: relative;
+}
+
+.mat-badge-above .mat-badge-content {
+  top: -8px;
+}
+
+.mat-badge-after .mat-badge-content {
+  right: -8px;
 }

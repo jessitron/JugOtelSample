@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -8,6 +8,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CartService } from './services/cart.service';
 import { ChatComponent } from './components/chat/chat.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -27,9 +28,11 @@ import { ChatComponent } from './components/chat/chat.component';
       <span>E-Commerce App</span>
       <span class="spacer"></span>
       <button mat-button routerLink="/products">Products</button>
-      <button mat-button routerLink="/cart">
+      <button mat-button routerLink="/cart" class="cart-button">
         <mat-icon>shopping_cart</mat-icon>
-        <span matBadge="{{ cartItemCount }}" matBadgeColor="warn" matBadgeSize="small">Cart</span>
+        <span matBadge="{{ cartItemCount }}" 
+           matBadgeColor="warn" matBadgeSize="large" 
+           matBadgePosition="above after">Cart</span>
       </button>
       <button mat-icon-button (click)="toggleChat()" matTooltip="Chat with Support">
         <mat-icon>chat</mat-icon>
@@ -49,16 +52,32 @@ import { ChatComponent } from './components/chat/chat.component';
     main {
       padding: 20px;
     }
+    .cart-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
   `]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   cartItemCount = 0;
   isChatOpen = false;
+  private cartSubscription?: Subscription;
 
   constructor(private cartService: CartService) {}
 
   ngOnInit(): void {
     this.updateCartCount();
+    // Subscribe to cart changes
+    this.cartSubscription = this.cartService.getCartItems$().subscribe(() => {
+      this.updateCartCount();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.cartSubscription) {
+      this.cartSubscription.unsubscribe();
+    }
   }
 
   updateCartCount(): void {

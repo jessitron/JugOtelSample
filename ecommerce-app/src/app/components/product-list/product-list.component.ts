@@ -7,6 +7,7 @@ import { Product } from '../../models/product.model';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { ProductImageComponent } from '../product-image/product-image.component';
 
 @Component({
   selector: 'app-product-list',
@@ -16,10 +17,11 @@ import { MatIconModule } from '@angular/material/icon';
     RouterModule,
     MatCardModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    ProductImageComponent,
   ],
   templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.scss']
+  styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
@@ -30,12 +32,12 @@ export class ProductListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.productService.getProducts().subscribe(
-      products => this.products = products
-    );
+    this.productService
+      .getProducts()
+      .subscribe((products) => (this.products = products));
   }
 
   addToCart(product: Product): void {
     this.cartService.addToCart(product);
   }
-} 
+}
