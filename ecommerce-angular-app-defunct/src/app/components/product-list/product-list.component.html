@@ -1,0 +1,24 @@
+<div class="product-list">
+  <h1>Our Products</h1>
+  <div class="products-grid">
+    <mat-card *ngFor="let product of products" class="product-card">
+      <app-product-image
+        [imageUrl]="product.imageUrl"
+        [productId]="product.id"
+        [altText]="product.name"
+        imageClass="mat-card-image"
+      ></app-product-image>
+      <mat-card-content>
+        <h2>{{ product.name }}</h2>
+        <p>{{ product.description }}</p>
+        <p class="price">${{ product.price | number:'1.2-2' }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="addToCart(product)">
+          <mat-icon>add_shopping_cart</mat-icon>
+          Add to Cart
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div> 

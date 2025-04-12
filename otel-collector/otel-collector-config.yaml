@@ -6,6 +6,7 @@ receivers:
         cors:
           allowed_origins:
             - http://localhost:4200
+            - http://localhost:5173
             - http://ecommerce-app:8081
             - http://localhost:8080
           allowed_headers:
@@ -15,6 +16,7 @@ processors:
 
 exporters:
   debug:
+   # verbosity: detailed
 
   otlp:
     endpoint: https://api.honeycomb.io:443

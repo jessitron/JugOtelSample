@@ -1,8 +1,8 @@
 package org.rimple.ecommerce.ecommerce_service.controller;
 
+import org.rimple.ecommerce.ecommerce_service.dto.CartOperationDTO;
 import org.rimple.ecommerce.ecommerce_service.model.Cart;
-import org.rimple.ecommerce.ecommerce_service.service.CartService;
-import org.springframework.http.ResponseEntity;
+import org.rimple.ecommerce.ecommerce_service.repository.service.CartService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,13 +19,17 @@ public class CartController {
         return cartService.getCart(userId);
     }
 
+    @PostMapping
+    public Cart createCart(@RequestHeader("X-User-ID") String userId) {
+        return cartService.createCart(userId);
+    }
+
     @PostMapping("/items")
     public Cart addToCart(
         @RequestHeader("X-User-ID") String userId,
-        @RequestParam Long productId,
-        @RequestParam(defaultValue = "1") Integer quantity
+        @RequestBody CartOperationDTO operation
     ) {
-        return cartService.addToCart(userId, productId, quantity);
+        return cartService.addToCart(userId, operation.getProductId(), operation.getQuantity());
     }
 
     @DeleteMapping("/items/{productId}")
