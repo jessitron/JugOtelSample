@@ -94,7 +94,7 @@ public class CartService {
      * @return
      */
     @Transactional
-    public Cart setQuantityInCart(String userId, Long productId, Integer quantity) {
+    public Cart updateQuantityInCart(String userId, Long productId, Integer quantity) {
         Cart cart = getCart(userId);
         Product product = productRepository.findById(productId).orElseThrow();
 
@@ -103,8 +103,8 @@ public class CartService {
             .findFirst();
 
         if (existingItem.isPresent()) {
-            CartItem item = existingItem.get();
-            item.setQuantity(quantity);
+            CartItem cartItem = existingItem.get();
+            cartItem.setQuantity(quantity);
         } else {
             CartItem newItem = new CartItem();
             newItem.setProduct(product);

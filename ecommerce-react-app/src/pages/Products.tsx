@@ -1,17 +1,41 @@
-import { useCart } from '../hooks/useCart';
-import { Product, useProducts } from '../hooks/useCatalog';
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {useSessionId} from "../hooks/useSessionId.ts";
+import {Product} from "../hooks/useCart.ts";
 
 
 const Products = () => {
-  const { products, isLoading, error } = useProducts();
-  const { quantityInCart, updateQuantity } = useCart();
+  const sessionId = useSessionId();
+
+  const { error, data, isFetching } = useQuery({
+      queryKey: ['products'],
+      queryFn: async () => {
+         const response = await fetch('/api/products', {
+             headers: {
+                 'X-User-ID': sessionStorage.getItem('session.id') || 'anonymous'
+             }
+         });
+         return await response.json();
+      }
+  });
+
+  const addToCartMutation = useMutation({
+    mutationFn: async (cartChange : { productId: number, quantity?: number }) => {
+        return await fetch(`/api/cart/items/${cartChange.productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-ID': sessionId,
+            },
+            body: JSON.stringify({productId: cartChange.productId, quantity: cartChange.quantity}),
+        })
+    }
+  })
 
   const handleAddToCart = async (productId: number) => {
-    const qty = quantityInCart(productId);
-    await updateQuantity(productId, qty + 1);
+    addToCartMutation.mutate({ productId: productId, quantity: undefined });
   };
 
-  if (isLoading) {
+  if (isFetching) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
@@ -23,7 +47,7 @@ const Products = () => {
   if (error) {
     return (
       <div className="text-center text-red-600">
-        <p>{error}</p>
+        <p>{error.message}</p>
       </div>
     );
   }
@@ -31,7 +55,7 @@ const Products = () => {
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {products.map((product: Product) => (
+        {data.map((product: Product) => (
           <div key={product.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
             <div className="p-3">
               <div className="flex justify-center items-center h-40 mb-3 bg-gray-50 rounded-lg">

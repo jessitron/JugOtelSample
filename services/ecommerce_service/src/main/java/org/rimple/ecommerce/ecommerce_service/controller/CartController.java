@@ -24,12 +24,22 @@ public class CartController {
         return cartService.createCart(userId);
     }
 
-    @PostMapping("/items")
+    @PostMapping("/items/{productId}")
     public Cart addToCart(
         @RequestHeader("X-User-ID") String userId,
+        @PathVariable Long productId,
         @RequestBody CartOperationDTO operation
     ) {
-        return cartService.addToCart(userId, operation.getProductId(), operation.getQuantity());
+        return cartService.addToCart(userId, productId, operation.getQuantity());
+    }
+
+    @PutMapping("/items/{productId}")
+    public Cart updateItemQuantity(
+        @RequestHeader("X-User-ID") String userId,
+        @PathVariable Long productId,
+        @RequestBody CartOperationDTO operation
+    ) {
+        return cartService.updateQuantityInCart(userId, productId, operation.getQuantity());
     }
 
     @DeleteMapping("/items/{productId}")

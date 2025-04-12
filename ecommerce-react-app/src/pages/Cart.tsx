@@ -1,22 +1,42 @@
 import { Link } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
+import {useSessionId} from "../hooks/useSessionId.ts";
+import {useMutation, useQuery} from "@tanstack/react-query";
 
 const Cart = () => {
+  const sessionId = useSessionId();
+
+  const { error, data:cart, isFetching } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
+      const response = await fetch('/api/cart', {
+        headers: {
+          'X-User-ID': sessionId
+        }
+      });
+      return await response.json();
+    }
+  });
+
+  // const { error:updateError, isPending } = useMutation({
+  //   mutationFn: async () => {
+  //
+  //   }
+  //
+  // });
+
   const {
-    isLoading,
-    error,
-      cart,
     updateQuantity,
     removeFromCart,
     loadCart,
     quantityInCart,
-    grandTotal
+    // grandTotal
   } = useCart();
 
   // Sort cart items by ID
   const sortedCartItems = [...cart?.items || []].sort((a, b) => a.id - b.id);
 
-  if (isLoading) {
+  if (isFetching) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
@@ -30,7 +50,7 @@ const Cart = () => {
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-sm p-4">
           <div className="text-center">
-            <p className="text-red-600 mb-4">{error}</p>
+            <p className="text-red-600 mb-4">{error.message}</p>
             <button
               onClick={loadCart}
               className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors duration-200"
@@ -86,16 +106,17 @@ const Cart = () => {
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <button
-                      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                      disabled={quantityInCart(item.product.id) === 0}
+                      onClick={() => updateQuantity(item.product.id, quantityInCart(item.product.id) - 1)}
                       className="p-1 rounded-full hover:bg-gray-100"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
                       </svg>
                     </button>
-                    <span className="text-sm text-gray-800">{item.quantity}</span>
+                    <span className="text-sm text-gray-800">{quantityInCart(item.product.id)}</span>
                     <button
-                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                      onClick={() => updateQuantity(item.product.id, quantityInCart(item.product.id) + 1)}
                       className="p-1 rounded-full hover:bg-gray-100"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">

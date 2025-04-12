@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSessionId } from './useSessionId';
 
-const sessionId = useSessionId();
 
 export interface Product {
   id: number;
@@ -27,6 +26,7 @@ export interface Cart {
 }
 
 export const useCart = () => {
+  const sessionId = useSessionId();
   const [cart, setCart ] = useState<Cart>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +90,6 @@ export const useCart = () => {
         throw new Error('Failed to add item to cart');
       }
 
-      // always resyncs cart
       await loadCart();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add item to cart');
@@ -127,8 +126,8 @@ export const useCart = () => {
         throw new Error('Failed to add item to cart');
       }
 
-      // always re-syncs cart
       await loadCart();
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update cart');
     }
@@ -171,11 +170,10 @@ export const useCart = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to clear cart');
     }
+
+    await loadCart();
   };
 
-  useEffect(() => {
-    loadCart();
-  }, []);
 
   const grandTotal = cart?.items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,

@@ -12,8 +12,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
@@ -52,7 +50,7 @@ public class CartServiceTest {
   public void shouldAddNewItemToCart() {
     Cart cart = cartService.addToCart("user123", testProduct.getId(), 2);
     assertThat(cart.getItems()).hasSize(1);
-    CartItem item = cart.getItems().get(0);
+    CartItem item = cart.getItems().getFirst();
     assertThat(item.getProduct().getId()).isEqualTo(testProduct.getId());
     assertThat(item.getQuantity()).isEqualTo(2);
   }
@@ -62,15 +60,15 @@ public class CartServiceTest {
     cartService.addToCart("user123", testProduct.getId(), 2);
     Cart updated = cartService.addToCart("user123", testProduct.getId(), 3);
     assertThat(updated.getItems()).hasSize(1);
-    assertThat(updated.getItems().get(0).getQuantity()).isEqualTo(5);
+    assertThat(updated.getItems().getFirst().getQuantity()).isEqualTo(5);
   }
 
   @Test
   public void shouldSetExactQuantity() {
     cartService.addToCart("user123", testProduct.getId(), 1);
-    Cart updated = cartService.setQuantityInCart("user123", testProduct.getId(), 10);
+    Cart updated = cartService.updateQuantityInCart("user123", testProduct.getId(), 10);
     assertThat(updated.getItems()).hasSize(1);
-    assertThat(updated.getItems().get(0).getQuantity()).isEqualTo(10);
+    assertThat(updated.getItems().getFirst().getQuantity()).isEqualTo(10);
   }
 
   @Test
@@ -85,7 +83,7 @@ public class CartServiceTest {
     cartService.addToCart("user123", testProduct.getId(), 5);
     Cart updated = cartService.removeFromCart("user123", testProduct.getId(), 2);
     assertThat(updated.getItems()).hasSize(1);
-    assertThat(updated.getItems().get(0).getQuantity()).isEqualTo(3); // 5 - 2
+    assertThat(updated.getItems().getFirst().getQuantity()).isEqualTo(3); // 5 - 2
   }
 
   @Test

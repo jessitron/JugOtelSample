@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasValue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -77,19 +78,39 @@ class CartControllerTest {
   @Test
   void testAddToCart() throws Exception {
     CartOperationDTO dto = new CartOperationDTO();
-    dto.setProductId(1L);
     dto.setQuantity(3);
 
     Cart cart = createMockCart("user123");
     Mockito.when(cartService.addToCart("user123", 1L, 3)).thenReturn(cart);
 
-    mockMvc.perform(post("/api/cart/items")
+    mockMvc.perform(post("/api/cart/items/1")
             .header("X-User-ID", "user123")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(dto)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.items", hasSize(1)));
   }
+
+  @Test
+  void testUpdateItemQuantity() throws Exception {
+    CartOperationDTO dto = new CartOperationDTO();
+    dto.setQuantity(9);
+
+    // the cart to return
+    Cart cart = createMockCart("user123");
+    cart.getItems().getFirst().setQuantity(9);
+    Mockito.when(cartService.updateQuantityInCart("user123", 1L, 9)).thenReturn(cart);
+
+    mockMvc.perform(put("/api/cart/items/1")
+        .header("X-User-ID", "user123")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(dto)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.items", hasSize(1)))
+        .andExpect(jsonPath("$.items[0].quantity").value(9));
+    Mockito.verify(cartService).updateQuantityInCart("user123", 1L, 9);
+  }
+
 
   @Test
   void testRemoveFromCart() throws Exception {
