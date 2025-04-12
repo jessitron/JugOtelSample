@@ -117,7 +117,8 @@ public class CartService {
 
     @Transactional
     public Cart createCart(String userId) {
-        Cart cart = createCart(userId);
+        Cart cart = new Cart();
+        cart.setUserId(userId);
         return cartRepository.save(cart);
     }
 } 

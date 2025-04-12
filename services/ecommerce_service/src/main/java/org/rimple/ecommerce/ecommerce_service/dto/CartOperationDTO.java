@@ -20,6 +20,9 @@ public class CartOperationDTO {
         return quantity;
     }
 
+    public CartOperationDTO() {
+    }
+
     public CartOperationDTO(Long productId, Integer quantity) {
         this.productId = productId;
         this.quantity = quantity;
