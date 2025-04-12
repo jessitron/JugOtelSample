@@ -3,7 +3,6 @@ package org.rimple.ecommerce.ecommerce_service.otel;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.*;
 import io.opentelemetry.context.Scope;
-import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -15,7 +14,6 @@ import java.util.Arrays;
 
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class MethodTracingAspect {
 
   private Logger log = LoggerFactory.getLogger(MethodTracingAspect.class);

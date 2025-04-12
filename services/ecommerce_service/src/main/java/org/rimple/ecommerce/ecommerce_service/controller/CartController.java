@@ -2,7 +2,7 @@ package org.rimple.ecommerce.ecommerce_service.controller;
 
 import org.rimple.ecommerce.ecommerce_service.dto.CartOperationDTO;
 import org.rimple.ecommerce.ecommerce_service.model.Cart;
-import org.rimple.ecommerce.ecommerce_service.repository.service.CartService;
+import org.rimple.ecommerce.ecommerce_service.service.CartService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,8 +35,9 @@ public class CartController {
     @DeleteMapping("/items/{productId}")
     public Cart removeFromCart(
         @RequestHeader("X-User-ID") String userId,
-        @PathVariable Long productId
+        @PathVariable Long productId,
+        @RequestBody CartOperationDTO operation
     ) {
-        return cartService.removeFromCart(userId, productId);
+        return cartService.removeFromCart(userId, productId, operation.getQuantity());
     }
 } 

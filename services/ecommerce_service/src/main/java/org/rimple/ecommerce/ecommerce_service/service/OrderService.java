@@ -1,4 +1,4 @@
-package org.rimple.ecommerce.ecommerce_service.repository.service;
+package org.rimple.ecommerce.ecommerce_service.service;
 
 import org.rimple.ecommerce.ecommerce_service.model.*;
 import org.rimple.ecommerce.ecommerce_service.repository.CartRepository;

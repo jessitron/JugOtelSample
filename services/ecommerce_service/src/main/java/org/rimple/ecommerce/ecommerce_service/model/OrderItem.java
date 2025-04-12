@@ -1,10 +1,8 @@
 package org.rimple.ecommerce.ecommerce_service.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import java.time.LocalDateTime;
 
-@Data
 @Entity
 @Table(name = "order_items")
 public class OrderItem {
@@ -28,4 +26,55 @@ public class OrderItem {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-} 
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Order getPurchaseOrder() {
+        return purchaseOrder;
+    }
+
+    public void setPurchaseOrder(Order purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public Double getPriceAtTime() {
+        return priceAtTime;
+    }
+
+    public void setPriceAtTime(Double priceAtTime) {
+        this.priceAtTime = priceAtTime;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public OrderItem() {
+    }
+}

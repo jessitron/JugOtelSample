@@ -1,7 +1,7 @@
 package org.rimple.ecommerce.ecommerce_service.controller;
 
 import org.rimple.ecommerce.ecommerce_service.model.Product;
-import org.rimple.ecommerce.ecommerce_service.repository.service.ProductService;
+import org.rimple.ecommerce.ecommerce_service.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
