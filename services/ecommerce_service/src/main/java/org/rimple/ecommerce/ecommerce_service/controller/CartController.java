@@ -25,15 +25,6 @@ public class CartController {
     }
 
     @PostMapping("/items/{productId}")
-    public Cart addToCart(
-        @RequestHeader("X-User-ID") String userId,
-        @PathVariable Long productId,
-        @RequestBody CartOperationDTO operation
-    ) {
-        return cartService.addToCart(userId, productId, operation.getQuantity());
-    }
-
-    @PutMapping("/items/{productId}")
     public Cart updateItemQuantity(
         @RequestHeader("X-User-ID") String userId,
         @PathVariable Long productId,
@@ -41,13 +32,4 @@ public class CartController {
     ) {
         return cartService.updateQuantityInCart(userId, productId, operation.getQuantity());
     }
-
-    @DeleteMapping("/items/{productId}")
-    public Cart removeFromCart(
-        @RequestHeader("X-User-ID") String userId,
-        @PathVariable Long productId,
-        @RequestBody CartOperationDTO operation
-    ) {
-        return cartService.removeFromCart(userId, productId, operation.getQuantity());
-    }
-} 
+}

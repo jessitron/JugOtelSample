@@ -33,6 +33,10 @@ public class Cart {
         this.items = items;
     }
 
+    public void addItem(CartItem item) {
+        this.items.add(item);
+    }
+
     public String getUserId() {
         return userId;
     }

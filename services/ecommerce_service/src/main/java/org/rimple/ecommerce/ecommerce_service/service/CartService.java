@@ -98,18 +98,25 @@ public class CartService {
         Cart cart = getCart(userId);
         Product product = productRepository.findById(productId).orElseThrow();
 
-        Optional<CartItem> existingItem = cart.getItems().stream()
-            .filter(item -> item.getProduct().getId().equals(productId))
-            .findFirst();
-
-        if (existingItem.isPresent()) {
-            CartItem cartItem = existingItem.get();
-            cartItem.setQuantity(quantity);
+        // remove if quantity is zero
+        if (quantity.equals(0)) {
+           cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
         } else {
-            CartItem newItem = new CartItem();
-            newItem.setProduct(product);
-            newItem.setQuantity(quantity);
-            cart.getItems().add(newItem);
+
+            // otherwise, find it and if exists, update, otherwise create
+            Optional<CartItem> existingItem = cart.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst();
+
+            if (existingItem.isPresent()) {
+                CartItem cartItem = existingItem.get();
+                cartItem.setQuantity(quantity);
+            } else {
+                CartItem newItem = new CartItem();
+                newItem.setProduct(product);
+                newItem.setQuantity(quantity);
+                cart.getItems().add(newItem);
+            }
         }
 
         return cartRepository.save(cart);

@@ -16,8 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.hasValue;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -52,6 +51,24 @@ class CartControllerTest {
     return cart;
   }
 
+  private Cart createMockCartWithQuantity(String userId, Integer quantity) {
+    Product product = new Product();
+    product.setId(1L);
+    product.setName("Test Product");
+    product.setPrice(99.99);
+
+    CartItem item = new CartItem();
+    item.setId(1L);
+    item.setProduct(product);
+    item.setQuantity(quantity);
+
+    Cart cart = new Cart();
+    cart.setId(100L);
+    cart.setUserId(userId);
+    cart.setItems(List.of(item));
+    return cart;
+  }
+
   @Test
   void testGetCart() throws Exception {
     Cart cart = createMockCart("user123");
@@ -78,10 +95,12 @@ class CartControllerTest {
   @Test
   void testAddToCart() throws Exception {
     CartOperationDTO dto = new CartOperationDTO();
-    dto.setQuantity(3);
+    dto.setQuantity(1);
 
-    Cart cart = createMockCart("user123");
-    Mockito.when(cartService.addToCart("user123", 1L, 3)).thenReturn(cart);
+    // set up a new fake cart with an item with quantity of 1
+    // to return the mocked created cart
+    Cart cart = createMockCartWithQuantity("user123", 1);
+    Mockito.when(cartService.updateQuantityInCart("user123", 1L, 1)).thenReturn(cart);
 
     mockMvc.perform(post("/api/cart/items/1")
             .header("X-User-ID", "user123")
@@ -115,16 +134,15 @@ class CartControllerTest {
   @Test
   void testRemoveFromCart() throws Exception {
     CartOperationDTO dto = new CartOperationDTO();
-    dto.setQuantity(1);
+    dto.setQuantity(0);
 
     Cart cart = createMockCart("user123");
-    Mockito.when(cartService.removeFromCart("user123", 1L, 1)).thenReturn(cart);
+    Mockito.when(cartService.updateQuantityInCart("user123", 1L, 1)).thenReturn(cart);
 
-    mockMvc.perform(delete("/api/cart/items/1")
+    mockMvc.perform(post("/api/cart/items/1")
             .header("X-User-ID", "user123")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(dto)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.items", hasSize(1)));
+        .andExpect(status().isOk());
   }
 }

@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-query';
 
 import App from './App.tsx'
+import { CartProvider } from './contexts/CartContext.tsx';
 
 // Add HoneycombWebSDK to observe code and send to collector
 initialize();
@@ -17,7 +18,9 @@ const queryClient = new QueryClient();
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <CartProvider>      
+        <App />
+      </CartProvider>
     </QueryClientProvider>
   </StrictMode>,
 )

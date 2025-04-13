@@ -1,10 +1,11 @@
-import {useMutation, useQuery} from "@tanstack/react-query";
-import {useSessionId} from "../hooks/useSessionId.ts";
-import {Product} from "../hooks/useCart.ts";
+import {useQuery} from "@tanstack/react-query";
+import { Product } from "../types";
+import { useCart } from "../contexts/useCart";
 
 
 const Products = () => {
-  const sessionId = useSessionId();
+
+  const { addToCart, isProductInCart } = useCart();
 
   const { error, data, isFetching } = useQuery({
       queryKey: ['products'],
@@ -18,21 +19,8 @@ const Products = () => {
       }
   });
 
-  const addToCartMutation = useMutation({
-    mutationFn: async (cartChange : { productId: number, quantity?: number }) => {
-        return await fetch(`/api/cart/items/${cartChange.productId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-User-ID': sessionId,
-            },
-            body: JSON.stringify({productId: cartChange.productId, quantity: cartChange.quantity}),
-        })
-    }
-  })
-
   const handleAddToCart = async (productId: number) => {
-    addToCartMutation.mutate({ productId: productId, quantity: undefined });
+    addToCart(productId, 1);
   };
 
   if (isFetching) {
@@ -76,6 +64,7 @@ const Products = () => {
                   ${product.price.toFixed(2)}
                 </span>
                 <button
+                  disabled={isProductInCart(product.id)}
                   onClick={() => handleAddToCart(product.id)}
                   className="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-500 transition-colors duration-200"
                 >

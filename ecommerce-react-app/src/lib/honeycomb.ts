@@ -20,6 +20,8 @@ const OTEL_ENDPOINT = import.meta.env.VITE_OTEL_EXPORTER_OTLP_ENDPOINT;
 const generator = new RandomIdGenerator();
 // re-use the traceId generator, a useful uuid
 export const sessionId = generator.generateTraceId();
+// HACK hold this in session storage so our context can access it
+sessionStorage.setItem('session.id', sessionId);
 
 export function initialize() {
   try {

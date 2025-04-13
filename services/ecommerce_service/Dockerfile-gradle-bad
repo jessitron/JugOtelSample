@@ -1,0 +1,34 @@
+# -------- Build stage --------
+FROM gradle:8.7.0-jdk21-alpine AS build
+
+
+WORKDIR /app
+
+ENV ORG_GRADLE_VFS_WATCH=false
+
+# Copy only the build config to cache dependencies first
+COPY build.gradle.kts /app/
+RUN gradle build --no-daemon --stacktrace || true
+
+# Copy the full source and re-run build
+COPY . /app
+RUN gradle bootJar --no-daemon
+
+# -------- Runtime stage --------
+FROM eclipse-temurin:21-jre-alpine
+
+ENV ORG_GRADLE_VFS_WATCH=false
+
+WORKDIR /app
+
+# Copy the generated JAR and OpenTelemetry agent
+COPY --from=build /app/build/libs/*.jar app.jar
+COPY opentelemetry-javaagent.jar .
+
+EXPOSE 8081
+
+# Optional: Disable logs exporter unless configured
+ENV OTEL_LOGS_EXPORTER=none
+
+ENTRYPOINT ["sh", "-c", "java -javaagent:opentelemetry-javaagent.jar -jar app.jar"]
+

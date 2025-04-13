@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react';
+import {Product} from "../types.ts";
 
-export interface Product {
-    id: number;
-    name: string;
-    price: number;
-    imageUrl: string;
-    description: string;
-}
+
 
 export const useProducts = () => {
     const [products, setProducts] = useState<Product[]>([]);

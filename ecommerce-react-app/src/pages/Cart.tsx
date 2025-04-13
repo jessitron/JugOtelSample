@@ -1,42 +1,19 @@
 import { Link } from 'react-router-dom';
-import { useCart } from '../hooks/useCart';
-import {useSessionId} from "../hooks/useSessionId.ts";
-import {useMutation, useQuery} from "@tanstack/react-query";
+import { useCart } from '../contexts/useCart';
 
 const Cart = () => {
-  const sessionId = useSessionId();
-
-  const { error, data:cart, isFetching } = useQuery({
-    queryKey: ['products'],
-    queryFn: async () => {
-      const response = await fetch('/api/cart', {
-        headers: {
-          'X-User-ID': sessionId
-        }
-      });
-      return await response.json();
-    }
-  });
-
-  // const { error:updateError, isPending } = useMutation({
-  //   mutationFn: async () => {
-  //
-  //   }
-  //
-  // });
 
   const {
-    updateQuantity,
-    removeFromCart,
+    cart,
+    isLoading,
+    error,
     loadCart,
-    quantityInCart,
-    // grandTotal
+    setCartQuantity
   } = useCart();
 
-  // Sort cart items by ID
-  const sortedCartItems = [...cart?.items || []].sort((a, b) => a.id - b.id);
+  loadCart();
 
-  if (isFetching) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
@@ -63,7 +40,7 @@ const Cart = () => {
     );
   }
 
-  if (!sortedCartItems.length) {
+  if (!cart.items.length) {
     return (
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-sm p-4">
@@ -89,7 +66,7 @@ const Cart = () => {
       <div className="max-w-2xl mx-auto">
         <h2 className="text-xl font-semibold mb-4">Your Cart</h2>
         <div className="space-y-3">
-          {sortedCartItems.map((item) => (
+          {cart.items.map((item) => (
             <div key={item.id} className="bg-white rounded-lg shadow-sm p-3">
               <div className="flex items-center gap-3">
                 <div className="flex-shrink-0 w-20 h-20 bg-gray-50 rounded-lg flex items-center justify-center">
@@ -106,17 +83,17 @@ const Cart = () => {
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <button
-                      disabled={quantityInCart(item.product.id) === 0}
-                      onClick={() => updateQuantity(item.product.id, quantityInCart(item.product.id) - 1)}
+                      disabled={item.quantity === 0}
+                      onClick={() => setCartQuantity(item.product.id, item.quantity - 1)}
                       className="p-1 rounded-full hover:bg-gray-100"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
                       </svg>
                     </button>
-                    <span className="text-sm text-gray-800">{quantityInCart(item.product.id)}</span>
+                    <span className="text-sm text-gray-800">{item.quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.product.id, quantityInCart(item.product.id) + 1)}
+                      onClick={() => setCartQuantity(item.product.id, item.quantity + 1)}
                       className="p-1 rounded-full hover:bg-gray-100"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -126,7 +103,7 @@ const Cart = () => {
                   </div>
                 </div>
                 <button
-                  onClick={() => removeFromCart(item.product.id)}
+                  onClick={() => setCartQuantity(item.product.id, 0)}
                   className="p-1.5 text-red-600 hover:bg-red-50 rounded-full"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
