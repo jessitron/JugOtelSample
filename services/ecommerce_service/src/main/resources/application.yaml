@@ -32,6 +32,10 @@ otel:
       service:
         name: ecommerce-service
   instrumentation:
+    # logback-appender:
+    #   enabled: false
+    # slf4j-simple:
+    #   enabled: false
     common:
       experimental:
         controller:

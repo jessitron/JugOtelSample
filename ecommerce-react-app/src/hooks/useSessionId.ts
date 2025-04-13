@@ -1,2 +1,2 @@
-import {sessionId} from '../lib/honeycomb';
+import {sessionId} from '../lib/HoneycombProvider';
 export const useSessionId = () => { return sessionId; }
