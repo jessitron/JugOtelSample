@@ -1,40 +1,29 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from '../hooks/useCart';
+import { useCart } from '../contexts/useCart';
 import CheckoutForm from '../components/CheckoutForm';
 import { CheckoutFormData } from '../components/CheckoutForm';
 import { submitOrder, OrderItem } from '../services/orderService';
-
+import {CartItem} from "../types.ts";
 const Checkout = () => {
   const navigate = useNavigate();
-  const { cartItems, total, isLoading, error, clearCart } = useCart();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const { cart, checkout, clearCart, isLoading, error } = useCart();
 
   const handleSubmit = async (formData: CheckoutFormData) => {
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    try {
+      // TODO - fix this up
       // Convert cart items to the format expected by the API
-      const orderItems: OrderItem[] = cartItems.map(item => ({
-        productId: item.product.id,
-        quantity: item.quantity
-      }));
+      // const orderItems: OrderItem[] = cart.items.map((item): CartItem => ({
+      //   productId: item.product.id,
+      //   quantity: item.quantity
+      // }));
 
-      // Submit the order
-      const { orderId } = await submitOrder(orderItems, formData);
-      
+      // Submit the order - based on data in database for the user
+      checkout();
+
       // Clear the cart
       clearCart();
       
       // Navigate to order confirmation page
-      navigate(`/orders/${orderId}`);
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Failed to submit order');
-    } finally {
-      setIsSubmitting(false);
-    }
+      // navigate(`/orders/${orderId}`);
   };
 
   if (isLoading) {
@@ -64,7 +53,7 @@ const Checkout = () => {
     );
   }
 
-  if (!cartItems.length) {
+  if (!cart.items.length) {
     return (
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-sm p-4">
@@ -85,6 +74,11 @@ const Checkout = () => {
     );
   }
 
+  const cartTotal = cart.items.reduce((prev, curr) => {
+    console.log(prev, curr);
+    return (prev || 0) + (curr.product.price * curr.quantity);
+  }, 0);
+
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="max-w-2xl mx-auto">
@@ -93,7 +87,7 @@ const Checkout = () => {
           <div className="mb-4">
             <h3 className="text-lg font-medium mb-2">Order Summary</h3>
             <div className="space-y-2">
-              {cartItems.map((item) => (
+              {cart.items.map((item: CartItem) => (
                 <div key={item.id} className="flex justify-between">
                   <span>{item.product.name} x {item.quantity}</span>
                   <span>${(item.product.price * item.quantity).toFixed(2)}</span>
@@ -103,7 +97,7 @@ const Checkout = () => {
             <div className="mt-4 pt-4 border-t">
               <div className="flex justify-between font-semibold">
                 <span>Total:</span>
-                <span>${total.toFixed(2)}</span>
+                <span>${cartTotal.toFixed(2)}</span>
               </div>
             </div>
           </div>

@@ -128,4 +128,9 @@ public class CartService {
         cart.setUserId(userId);
         return cartRepository.save(cart);
     }
+
+    @Transactional
+    public void removeCart(String userId) {
+        cartRepository.deleteByUserId(userId);
+    }
 } 

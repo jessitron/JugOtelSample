@@ -6,6 +6,8 @@ export interface CartContextType {
     error: Error | null;
     loadCart: () => void;
     addToCart: (productId: number, quantity?: number) => void;
+    checkout: () => void;
+    clearCart: () => void;
     isProductInCart: (productId: number) => boolean;
     removeFromCart: (productId: number, quantity?: number) => void;
     setCartQuantity: (productId: number, quantity: number) => void;

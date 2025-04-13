@@ -79,6 +79,34 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] }),
     });
 
+    const checkoutMutation = useMutation({
+        mutationFn: async () => {
+            const res = await fetch(`/api/orders/checkout`, {
+                method: 'POST',
+                headers: {
+                    'X-User-ID': sessionStorage.getItem('session.id') || '',
+                },
+                body: JSON.stringify({})
+            });
+            if (!res.ok) throw new Error('Failed to remove item');
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] }),
+    });
+
+    const clearCartMutation= useMutation({
+        mutationFn: async () => {
+            const res = await fetch(`/api/cart`, {
+                method: 'DELETE',
+                headers: {
+                    'X-User-ID': sessionStorage.getItem('session.id') || '',
+                },
+                body: JSON.stringify({})
+            });
+            if (!res.ok) throw new Error('Failed to remove item');
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] }),
+    });
+
     const addToCart = (productId: number, quantity?: number) => {
         addMutation.mutate({ productId, quantity: quantity ?? 1 });
     };
@@ -87,8 +115,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         removeMutation.mutate({ productId: productId, quantity: quantity ?? 1 });
     };
 
+    const clearCart = () => {
+       clearCartMutation.mutate();
+    }
+
     const setCartQuantity = (productId: number, quantity: number) => {
         setQuantityMutation.mutate({ productId: productId, quantity: quantity });
+    };
+
+    const checkout = () => {
+        checkoutMutation.mutate();
     };
 
     const loadCart = () => {
@@ -104,9 +140,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             cart, 
             isLoading, 
             isProductInCart,
-            addToCart, 
+            addToCart,
+            checkout,
             error,
             loadCart,
+            clearCart,
             removeFromCart, 
             setCartQuantity,
             productIdsInCart: new Set(cart.items.map(item => item.product.id))

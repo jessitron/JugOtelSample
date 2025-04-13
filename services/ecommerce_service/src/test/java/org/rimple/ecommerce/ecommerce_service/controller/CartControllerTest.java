@@ -120,7 +120,7 @@ class CartControllerTest {
     cart.getItems().getFirst().setQuantity(9);
     Mockito.when(cartService.updateQuantityInCart("user123", 1L, 9)).thenReturn(cart);
 
-    mockMvc.perform(put("/api/cart/items/1")
+    mockMvc.perform(post("/api/cart/items/1")
         .header("X-User-ID", "user123")
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(dto)))

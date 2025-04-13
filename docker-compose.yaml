@@ -46,7 +46,7 @@ services:
   ecommerce-service:
     build:
       context: ./services/ecommerce_service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-spring-starter
     ports:
       - "8081:8081"
     environment:
