@@ -42,17 +42,19 @@ public class HelloMessageController {
               .startSpan();
 
     try (Scope scope = extractedContext.makeCurrent()) {
-      // ✅ Create span inside extracted trace context
-      log.info("Received message: " + message.toString());
+
+      span.setAttribute("app.extracted-context", extractedContext.toString());
+      span.setAttribute("app.message-length", message.toString().length());
 
       // actual work performed here
       HelloResponse returnValue = new HelloResponse("Hello, " + message.getName() + "!");
 
-      log.info("Returning value: " + returnValue.toString());
+      span.setAttribute("app.response-length", returnValue.toString().length());
 
       return returnValue;
     } catch (Exception e) {
-      log.error("Error handling message", e);
+      span.setStatus(StatusCode.ERROR, "Error handling message");
+      span.recordException(e);
       throw e;
     } finally {
       span.end();
