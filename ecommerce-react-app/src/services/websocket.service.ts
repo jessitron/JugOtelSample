@@ -13,6 +13,7 @@ export const useWebSocket = () => {
 
   useEffect(() => {
     //ws.current = new WebSocket(`ws://${window.location.host}/api/chat`);
+    // TODO - externalize this
     ws.current = new WebSocket(`ws://localhost:8080/gs-guide-websocket`);
 
     ws.current.onopen = () => {
