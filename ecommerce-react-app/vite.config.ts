@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_CHAT_ENDPOINT,
           changeOrigin: true,
           secure: false,
+          ws: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         },
         '/otlp': {

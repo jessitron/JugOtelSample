@@ -49,19 +49,19 @@ export async function randomTimeout(span: Span, baseMs: number) {
   return new Promise((resolve) => setTimeout(resolve, delay));
 }
 
-export async function awaitOTLPRequest(page: Page, timeout?: number) {
+export async function awaitOTLPRequest(page: Page, timeout = 10000) {
   try {
-    if (timeout) {
-      await page.waitForRequest(`http://localhost:4318/v1/traces`, {
-        timeout,
-      });
-    } else {
-      await page.waitForRequest(`http://localhost:4318/v1/traces`);
-    }
-  } catch (e) {
-    // just keep rolling... sometimes we don't get one because we got there late
-    console.log("OTLP request not found");
-    return;
+    const request = await page.waitForRequest(
+      (req) =>
+        req.url().includes('/v1/traces') &&
+        req.method() === 'POST' &&
+        (req.postData()?.includes('resourceSpans') ?? false),
+      { timeout }
+    );
+
+    console.log('Observed OTLP trace export:', request.url());
+  } catch {
+    console.warn('No OTLP trace observed in time window.');
   }
 }
 

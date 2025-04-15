@@ -34,8 +34,8 @@ public class CartController {
         @RequestBody CartOperationDTO operation
     ) {
         Span currentSpan = Span.current();
-        currentSpan.setAttribute("app.product-id", productId);
-        currentSpan.setAttribute("app.product-quantity", operation.getQuantity());
+        currentSpan.setAttribute("app.user-id", userId);
+        currentSpan.setAttribute("app.product-desired-quantity", operation.getQuantity());
         return cartService.updateQuantityInCart(userId, productId, operation.getQuantity());
     }
 

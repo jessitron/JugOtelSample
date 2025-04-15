@@ -27,14 +27,11 @@ export async function run(BASE_URL: string, delayFactor: number) {
 
         await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
 
-        console.log('1')
         // Wait for telemetry request
         await awaitOTLPRequest(page);
 
         // Ensure we are on the root page
         verifyUrlPattern(page, span, `${BASE_URL}/`);
-
-        console.log('2')
 
         // Wait for telemetry request
         span.addEvent('verified', {
@@ -45,8 +42,6 @@ export async function run(BASE_URL: string, delayFactor: number) {
         await shoppingButton.click();
         await awaitOTLPRequest(page);
 
-        console.log('3');
-
         span.addEvent('clicked', {
           'app.clicked.event': 'Shop Now'
         });
@@ -56,8 +51,6 @@ export async function run(BASE_URL: string, delayFactor: number) {
         span.addEvent('navigation-change', {
           'app.navigated.to': page.url()
         });
-
-        console.log('4')
 
         // pick 4 random products
 
@@ -72,31 +65,28 @@ export async function run(BASE_URL: string, delayFactor: number) {
         const indices = Array.from({ length: total }, (_, i) => i)
           .sort(() => 0.5 - Math.random())
           .slice(0, 4);
-      
+       
         for (const i of indices) {
+          const button = allButtonsLocator.nth(i);
           console.log('clicking on', i);
-          await allButtonsLocator.nth(i).click();
-          await page.waitForTimeout(100); // Optional delay
+          await Promise.all([
+            page.waitForLoadState('networkidle'), // or waitForResponse / waitForSelector
+            button.click()
+          ]);
         }
 
         await awaitOTLPRequest(page)
-
-        console.log('5')
 
         const addToCartLocator= page.locator('//a[text()="Cart"]');
         await addToCartLocator.click();
 
         await awaitOTLPRequest(page)
 
-        console.log('6', page.url())
-
         // Confirm redirect to product page
         await expect(page).toHaveURL(/\/cart/);
         span.addEvent('navigation-change', {
           'app.navigated.to': page.url()
         });
-
-        console.log('7', page.url())
 
         // // pick a random US State and fill it
         // const usState = pickRandomUSState();

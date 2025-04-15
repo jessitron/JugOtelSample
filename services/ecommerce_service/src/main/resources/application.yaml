@@ -2,16 +2,17 @@ spring:
   application:
     name: ecommerce-service
   datasource:
-    url: jdbc:postgresql://postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
+    open-in-view: false
   # flyway:
   #   enabled: true
   #   locations: filesystem:../../db/migrations
@@ -23,7 +24,8 @@ server:
 
 logging:
   level:
-    org.springframework.web: debug
+    org.springframework.web: warn
+    root:  warn
 
 otel:
   propagators: tracecontext

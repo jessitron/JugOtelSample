@@ -5,8 +5,8 @@
     { 
       "name": "purchases", 
       "script": "actions/purchase-journey.js", 
-      "workers": 1, 
-      "delayFactor": 2000 
+      "workers": 4, 
+      "delayFactor": 200 
     }
   ]
 }
