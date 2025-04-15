@@ -6,6 +6,9 @@ import {
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Cart } from "../types";
 import { CartContextType, fetchCart } from './cartTypes';
+import { toast } from 'react-toastify';
+import { recordError } from '../lib/tracing';
+import { checkout as performCheckout, CheckoutResponse } from '../services/checkoutService';
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -60,9 +63,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 body: JSON.stringify({ productId: productId, quantity })
             });
 
-            if (!res.ok) throw new Error('Failed to add item');
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                const errorMessage = errorData.message || `Error ${res.status}: Failed to add item to cart`;
+                throw new Error(errorMessage);
+            }
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cart'] });
+        },
+        onError: (error: Error) => {
+            console.error('Failed to add item:', error);
+            toast.error('An unexpected error occurred. This will be reported');
+            recordError('CartContext.addMutation', error, {
+                'cart.operation': 'addToCart',
+                'cart.status': 'error'
+            });
+        }
     });
 
     const removeMutation = useMutation({
@@ -74,23 +91,39 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 },
                 body: JSON.stringify({ productId: productId, quantity })
             });
-            if (!res.ok) throw new Error('Failed to remove item');
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                const errorMessage = errorData.message || `Error ${res.status}: Failed to remove item from cart`;
+                throw new Error(errorMessage);
+            }
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cart'] });
+        },
+        onError: (error: Error) => {
+            console.error('Failed to remove item:', error);
+            toast.error('An unexpected error occurred. This will be reported');
+            recordError('CartContext.removeMutation', error, {
+                'cart.operation': 'removeFromCart',
+                'cart.status': 'error'
+            });
+        }
     });
 
-    const checkoutMutation = useMutation({
-        mutationFn: async () => {
-            const res = await fetch(`/api/orders/checkout`, {
-                method: 'POST',
-                headers: {
-                    'X-User-ID': sessionStorage.getItem('session.id') || '',
-                },
-                body: JSON.stringify({})
-            });
-            if (!res.ok) throw new Error('Failed to remove item');
+    const checkoutMutation = useMutation<CheckoutResponse, Error>({
+        mutationFn: performCheckout,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cart'] });
+            toast.success('Order placed successfully!');
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] }),
+        onError: (error: Error) => {
+            console.error('Failed to checkout:', error);
+            toast.error(error.message || 'Failed to place order');
+            recordError('CartContext.checkoutMutation', error, {
+                'cart.operation': 'checkout',
+                'cart.status': 'error'
+            });
+        }
     });
 
     const clearCartMutation= useMutation({

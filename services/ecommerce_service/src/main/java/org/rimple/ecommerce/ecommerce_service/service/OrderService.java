@@ -6,6 +6,7 @@ import org.rimple.ecommerce.ecommerce_service.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,6 +33,8 @@ public class OrderService {
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
         order.setStatus("PENDING");
+        order.setTotalAmount(0.0); // Initialize total amount
+        order.setItems(new ArrayList<>()); // Initialize items list
 
         // Convert cart items to order items
         cart.getItems().forEach(cartItem -> {
@@ -40,13 +43,18 @@ public class OrderService {
             orderItem.setQuantity(cartItem.getQuantity());
             orderItem.setPriceAtTime(cartItem.getProduct().getPrice());
             orderItem.setCreatedAt(LocalDateTime.now());
+            orderItem.setPurchaseOrder(order); // Set the reference to the order
             order.getItems().add(orderItem);
+            // Update total amount
+            order.setTotalAmount(order.getTotalAmount() + (orderItem.getPriceAtTime() * orderItem.getQuantity()));
         });
 
-        // Clear the cart
-        cart.getItems().clear();
-        cartRepository.save(cart);
+        // Save the order first
+        Order savedOrder = orderRepository.save(order);
+        
+        // Then delete the cart
+        cartRepository.deleteByUserId(userId);
 
-        return orderRepository.save(order);
+        return savedOrder;
     }
 } 

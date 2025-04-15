@@ -13,7 +13,7 @@ COPY opentelemetry-javaagent.jar ./opentelemetry-javaagent.jar
 RUN mvn clean package -DskipTests
 
 # Run stage
-FROM eclipse-temurin:23-jdk-alpine
+FROM eclipse-temurin:21-jdk-alpine
 
 # Set working directory
 WORKDIR /app
