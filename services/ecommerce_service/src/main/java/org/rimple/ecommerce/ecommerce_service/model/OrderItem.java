@@ -1,6 +1,7 @@
 package org.rimple.ecommerce.ecommerce_service.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,6 +13,7 @@ public class OrderItem {
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
+    @JsonIgnore
     private Order purchaseOrder;
 
     @ManyToOne
