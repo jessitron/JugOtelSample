@@ -12,6 +12,7 @@ export interface CartContextType {
     removeFromCart: (productId: number, quantity?: number) => void;
     setCartQuantity: (productId: number, quantity: number) => void;
     productIdsInCart: Set<number>;
+    getCartTotal: () => number;
 }
 
 export const fetchCart = async (): Promise<Cart> => {

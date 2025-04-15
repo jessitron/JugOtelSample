@@ -126,18 +126,26 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     });
 
-    const clearCartMutation= useMutation({
+    const clearCartMutation = useMutation({
         mutationFn: async () => {
             const res = await fetch(`/api/cart`, {
                 method: 'DELETE',
                 headers: {
                     'X-User-ID': sessionStorage.getItem('session.id') || '',
-                },
-                body: JSON.stringify({})
+                }
             });
-            if (!res.ok) throw new Error('Failed to remove item');
+            if (!res.ok) throw new Error('Failed to clear cart');
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cart'] });
+        },
+        onError: (error: Error) => {
+            console.error('Failed to clear cart:', error);
+            recordError('CartContext.clearCartMutation', error, {
+                'cart.operation': 'clearCart',
+                'cart.status': 'error'
+            });
+        }
     });
 
     const addToCart = (productId: number, quantity?: number) => {
@@ -149,8 +157,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const clearCart = () => {
-       clearCartMutation.mutate();
-    }
+        clearCartMutation.mutate();
+    };
 
     const setCartQuantity = (productId: number, quantity: number) => {
         setQuantityMutation.mutate({ productId: productId, quantity: quantity });
@@ -168,19 +176,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         return cart?.items.some(item => item.product.id === productId) || false;
     };
 
+    const getCartTotal = () => {
+        return cart?.items.reduce((total, item) => total + (item.product.price * item.quantity), 0) || 0;
+    };
+
     return (
         <CartContext.Provider value={{ 
             cart, 
             isLoading, 
-            isProductInCart,
-            addToCart,
-            checkout,
             error,
-            loadCart,
-            clearCart,
-            removeFromCart, 
+            loadCart: refetch,
+            addToCart,
+            removeFromCart,
             setCartQuantity,
-            productIdsInCart: new Set(cart.items.map(item => item.product.id))
+            checkout,
+            clearCart,
+            isProductInCart,
+            productIdsInCart: new Set(cart.items.map(item => item.product.id)),
+            getCartTotal
         }}>
             {children}
         </CartContext.Provider>
