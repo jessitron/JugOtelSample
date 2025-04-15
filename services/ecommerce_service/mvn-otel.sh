@@ -1,11 +1,6 @@
 #!/bin/bash
-export OTEL_SERVICE_NAME=ecommerce-service
-export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
-export OTEL_EXPORTER_OTLP_HEADERS=x-honeycomb-team=${HONEYCOMB_API_KEY}
-export POSTGRES_HOST=localhost
-export POSTGRES_DB=ordersdb
-export POSTGRES_USER=orders
-export POSTGRES_PASSWORD=orderspass
-export POSTGRES_PORT=5432
+source ../../.env-local
 
-mvn -P otel "$@"
+mvn -Dmaven.test.skip=true install
+
+source ../../.env-local && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar ./target/ecommerce-service*.jar
