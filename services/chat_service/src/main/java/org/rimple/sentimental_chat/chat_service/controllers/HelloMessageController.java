@@ -17,7 +17,10 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.rimple.sentimental_chat.chat_service.otel_utils.ContextUtils.GETTER;
 
@@ -29,10 +32,19 @@ public class HelloMessageController {
 
   private static final Log log = LogFactory.getLog(HelloMessageController.class);
 
+  private String createAnagram(String input) {
+    List<Character> chars = input.chars()
+        .mapToObj(c -> (char) c)
+        .collect(Collectors.toList());
+    Collections.shuffle(chars);
+    return chars.stream()
+        .map(String::valueOf)
+        .collect(Collectors.joining());
+  }
+
   @MessageMapping("/hello")
   @SendTo("/topic/hello")
   public HelloResponse sayHello(HelloSpring message, @Headers Map<String, Object> headers) {
-
     log.info("Headers: " + headers.toString());
 
     Context extractedContext = W3CTraceContextPropagator.getInstance().extract(Context.current(), headers, GETTER);
@@ -43,12 +55,12 @@ public class HelloMessageController {
               .startSpan();
 
     try (Scope scope = extractedContext.makeCurrent()) {
-
       span.setAttribute("app.extracted-context", extractedContext.toString());
       span.setAttribute("app.message-length", message.toString().length());
 
-      // actual work performed here
-      HelloResponse returnValue = new HelloResponse("Hello, " + message.getName() + "!");
+      // Create an anagram of the input message
+      String anagram = createAnagram(message.getName());
+      HelloResponse returnValue = new HelloResponse(anagram);
 
       span.setAttribute("app.response-length", returnValue.toString().length());
 

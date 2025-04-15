@@ -39,6 +39,9 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/v1\/traces$/, '')
         }
       }
+    },
+    define: {
+      global: 'window'
     }
   }
 })

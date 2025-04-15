@@ -14,6 +14,7 @@ import Home from './pages/Home';
 import Products from './pages/Products';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import Chat from './pages/Chat';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: 'products', element: <Products /> },
       { path: 'cart', element: <Cart /> },
+      { path: 'chat', element: <Chat /> },
       { path: 'checkout', element: <Checkout /> },
     ],
   },

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Client } from '@stomp/stompjs';
 
 interface ChatMessage {
   content: string;
@@ -9,44 +10,58 @@ interface ChatMessage {
 export const useWebSocket = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);
-  const ws = useRef<WebSocket | null>(null);
+  const stompClient = useRef<Client | null>(null);
 
   useEffect(() => {
-    //ws.current = new WebSocket(`ws://${window.location.host}/api/chat`);
-    // TODO - externalize this
-    ws.current = new WebSocket(`ws://localhost:8080/gs-guide-websocket`);
+    // Initialize STOMP client
+    const client = new Client({
+      brokerURL: 'ws://localhost:8080/gs-guide-websocket',
+      onConnect: () => {
+        setIsConnected(true);
+        setMessages(prev => [...prev, {
+          content: 'Hello! How can I help you today?',
+          sender: 'assistant',
+          timestamp: new Date()
+        }]);
 
-    ws.current.onopen = () => {
-      setIsConnected(true);
-      setMessages(prev => [...prev, {
-        content: 'Hello! How can I help you today?',
-        sender: 'assistant',
-        timestamp: new Date()
-      }]);
-    };
+        // Subscribe to the response topic
+        client.subscribe('/topic/hello', (message) => {
+          try {
+            const response = JSON.parse(message.body);
+            setMessages(prev => [...prev, {
+              content: response.response,
+              sender: 'assistant',
+              timestamp: new Date()
+            }]);
+          } catch (error) {
+            console.error('Error parsing STOMP message:', error);
+          }
+        });
+      },
+      onDisconnect: () => {
+        setIsConnected(false);
+      }
+    });
 
-    ws.current.onmessage = (event) => {
-      setMessages(prev => [...prev, {
-        content: event.data,
-        sender: 'assistant',
-        timestamp: new Date()
-      }]);
-    };
-
-    ws.current.onclose = () => {
-      setIsConnected(false);
-    };
+    stompClient.current = client;
+    client.activate();
 
     return () => {
-      if (ws.current) {
-        ws.current.close();
+      if (client) {
+        client.deactivate();
       }
     };
   }, []);
 
   const sendMessage = (message: string) => {
-    if (ws.current && isConnected) {
-      ws.current.send(message);
+    if (stompClient.current && isConnected) {
+      const messageObj = {
+        name: message
+      };
+      stompClient.current.publish({
+        destination: '/app/hello',
+        body: JSON.stringify(messageObj)
+      });
       setMessages(prev => [...prev, {
         content: message,
         sender: 'user',
