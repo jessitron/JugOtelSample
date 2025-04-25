@@ -6,5 +6,5 @@
 .cursorrules
 .DS_Store
 ./mcp.json
-./node_modules
+node_modules
 .cursor/

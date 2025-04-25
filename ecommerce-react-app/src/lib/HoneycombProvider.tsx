@@ -41,7 +41,7 @@ export function HoneycombProvider({ router }: HoneycombProviderProps) {
         sessionProvider: {
           getSessionId: () => sessionId,
         },
-        spanProcessor: new ReactRouterSpanProcessor({ router }),
+        spanProcessors: [new ReactRouterSpanProcessor({ router })],
       });
 
       // Inject our custom React Router span processor
