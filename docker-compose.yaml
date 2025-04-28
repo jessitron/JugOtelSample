@@ -64,32 +64,6 @@ services:
     networks:
       - chat-network
 
-  # TODO - finish building react app
-  # ecommerce-react-app:
-  #   build:
-  #     context: ecommerce-react-app
-  #     dockerfile: Dockerfile
-  #     args:
-  #       - NG_APP_COMMERCE_ENDPOINT=http://localhost:8081/api
-  #       - NG_APP_CHAT_ENDPOINT=http://localhost:8080/api
-  #       - NG_APP_OTLP_ENDPOINT=http://localhost:4318
-  #  ports:
-  #    - "8080:80"
-  #  environment:
-  #    - VITE_APP_CHAT_ENDPOINT=http://localhost:8080
-  #    - VITE_COMMERCE_ENDPOINT=http://localhost:8081
-  #    - VITE_OTLP_ENDPOINT=http://localhost:4318
-  #    - COMMERCE_ENDPOINT=http://ecommerce-service:8081
-  #    - CHAT_ENDPOINT=http://chat-service:8080/gs-guide-websocket
-  #    - OTLP_ENDPOINT=http://otel-collector:4318
-  #  env_file:
-  #    - ./.env
-  #  depends_on:
-  #    - chat-service
-  #    - ecommerce-service
-  #  networks:
-  #    - chat-network
-
   otel-collector:
     image: honeycombio/honeycomb-opentelemetry-collector:latest
     volumes:

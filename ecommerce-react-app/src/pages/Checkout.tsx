@@ -23,7 +23,7 @@ const Checkout = () => {
       clearCart();
       
       // Navigate to order confirmation page
-      // navigate(`/orders/${orderId}`);
+       navigate('/');
   };
 
   if (isLoading) {

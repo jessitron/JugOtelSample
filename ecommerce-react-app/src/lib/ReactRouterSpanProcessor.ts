@@ -32,10 +32,8 @@ export class ReactRouterSpanProcessor implements SpanProcessor {
 
     // Set the page.route as the generic dynamic route, making things easier to query
     // e.g. /name/:name/pet/:pet instead of name/123/pet/456
-    // url.path attribute will have the more specific computed route
-    // span.setAttributes({ 'page.route': this.route });
-    console.log(this.route);
-    span.setAttributes({ 'page.foo': `/${this.route}`});
+    // route.template attribute is what we'd use for this
+    span.setAttributes({ 'url.template': `/${this.route}`});
   }
 
   onEnd() {}
