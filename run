@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+set -x
+
+docker compose up -d
+
+cd ecommerce-react-app
+# only install if node_modules doesn't exist
+if [ ! -d "node_modules" ]; then
+  npm install
+fi
+npm run dev
